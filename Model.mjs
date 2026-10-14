@@ -33,7 +33,8 @@ export {
 export {
   nextMeeting,
   buildScheduleGroups,
-  heroActions
+  heroActions,
+  nowMarkerIndex
 } from "./model/select.mjs"
 
 export {

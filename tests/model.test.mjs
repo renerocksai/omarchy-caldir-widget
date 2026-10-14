@@ -843,3 +843,19 @@ test("capped stderr still selects the setup state", () => {
   assert.equal(result.status, 1)
   assert.equal(Model.isNoCalendarsError(result.stderr), true)
 })
+
+test("nowMarkerIndex sits before the first timed event yet to start", () => {
+  const now = new Date("2026-10-13T12:00:00Z")
+  const items = [
+    { all_day: true, startMs: Date.parse("2026-10-13T00:00:00Z") },
+    { all_day: false, startMs: Date.parse("2026-10-13T09:00:00Z") },
+    { all_day: false, startMs: Date.parse("2026-10-13T11:30:00Z") },
+    { all_day: false, startMs: Date.parse("2026-10-13T14:00:00Z") }
+  ]
+  assert.equal(Model.nowMarkerIndex(items, now), 3)
+  assert.equal(Model.nowMarkerIndex(items.slice(0, 3), now), 3)
+  assert.equal(Model.nowMarkerIndex([], now), 0)
+  // QML hands Repeater lists over as array-likes rather than Arrays.
+  const qmlList = { length: 3, 0: items[0], 1: items[1], 2: items[2] }
+  assert.equal(Model.nowMarkerIndex(qmlList, now), 3)
+})

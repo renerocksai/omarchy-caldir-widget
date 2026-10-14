@@ -681,6 +681,10 @@ Panel {
                   required property var modelData
                   required property int index
                   readonly property var group: modelData
+                  // The schedule always starts with today, so only group 0 has a "now".
+                  readonly property int nowIndex: index === 0 && group.items.length > 0
+                    ? Model.nowMarkerIndex(group.items, root.now)
+                    : -1
                   width: parent.width
                   height: groupColumn.implicitHeight
                   implicitHeight: height
@@ -730,100 +734,120 @@ Panel {
                     Repeater {
                       model: groupItem.group.items
 
-                      CursorSurface {
-                        id: eventRow
+                      Column {
+                        id: eventSlot
                         required property var modelData
                         required property int index
-                        readonly property var meeting: modelData
-                        readonly property int navigationIndex: navigation.eventOffset(groupItem.index) + index
-                        readonly property bool ended: modelData.endMs <= root.now.getTime()
-                        readonly property bool declined: modelData.declined === true
-                        readonly property bool tentative: modelData.tentative === true
                         width: parent.width
-                        hasCursor: navigationIndex === navigation.selectedEventIndex
-                        foreground: root.contentForeground
-                        accent: Color.accent
-                        opacity: ended ? 0.45 : 1.0
-                        implicitHeight: Math.max(Style.space(32), eventLayout.implicitHeight + Style.space(8))
+                        spacing: Style.space(4)
 
-                        Item {
-                          id: calendarMarker
-                          anchors.left: parent.left
-                          anchors.leftMargin: Style.space(6)
-                          anchors.verticalCenter: parent.verticalCenter
-                          width: Style.space(6)
-                          height: parent.height - Style.space(8)
-
-                          Rectangle {
-                            anchors.centerIn: parent
-                            width: eventRow.meeting.all_day ? Style.space(6) : Style.space(2)
-                            height: eventRow.meeting.all_day ? width : calendarMarker.height
-                            radius: width / 2
-                            color: eventRow.meeting.calendarColor || Color.accent
-                          }
+                        NowMarker {
+                          visible: groupItem.nowIndex === eventSlot.index
+                          width: parent.width
                         }
 
-                        MouseArea {
-                          id: rowMouse
-                          anchors.fill: parent
-                          hoverEnabled: true
-                          cursorShape: Qt.PointingHandCursor
-                          onEntered: navigation.focusEvent(eventRow.navigationIndex)
-                          onClicked: root.openEvent(eventRow.meeting)
-                        }
+                        CursorSurface {
+                          id: eventRow
+                          readonly property var modelData: eventSlot.modelData
+                          readonly property int index: eventSlot.index
+                          readonly property var meeting: modelData
+                          readonly property int navigationIndex: navigation.eventOffset(groupItem.index) + index
+                          readonly property bool ended: modelData.endMs <= root.now.getTime()
+                          readonly property bool happening: !modelData.all_day
+                            && modelData.startMs <= root.now.getTime() && !ended
+                          readonly property bool declined: modelData.declined === true
+                          readonly property bool tentative: modelData.tentative === true
+                          width: parent.width
+                          hasCursor: navigationIndex === navigation.selectedEventIndex
+                          foreground: root.contentForeground
+                          accent: Color.accent
+                          opacity: ended ? 0.45 : 1.0
+                          implicitHeight: Math.max(Style.space(32), eventLayout.implicitHeight + Style.space(8))
 
-                        onHasCursorChanged: if (eventRow.hasCursor) root.scrollItemIntoView(eventRow)
+                          Item {
+                            id: calendarMarker
+                            anchors.left: parent.left
+                            anchors.leftMargin: Style.space(6)
+                            anchors.verticalCenter: parent.verticalCenter
+                            width: Style.space(6)
+                            height: parent.height - Style.space(8)
 
-                        RowLayout {
-                          id: eventLayout
-                          anchors.left: parent.left
-                          anchors.right: parent.right
-                          anchors.verticalCenter: parent.verticalCenter
-                          anchors.leftMargin: Style.space(20)
-                          anchors.rightMargin: Style.space(10)
-                          spacing: Style.space(8)
-
-                          Text {
-                            Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredWidth: Style.space(root.timeFormat === "12h" ? 54 : 44)
-                            text: eventRow.meeting.all_day
-                              ? "ALL DAY"
-                              : Model.hm(eventRow.meeting.startMs, root.timeFormat)
-                            color: Qt.darker(root.contentForeground, 1.3)
-                            font.family: root.contentFontFamily
-                            font.pixelSize: eventRow.meeting.all_day ? Style.font.caption : Style.font.bodySmall
-                            font.bold: true
+                            Rectangle {
+                              anchors.centerIn: parent
+                              width: eventRow.meeting.all_day ? Style.space(6) : Style.space(2)
+                              height: eventRow.meeting.all_day ? width : calendarMarker.height
+                              radius: width / 2
+                              color: eventRow.meeting.calendarColor || Color.accent
+                            }
                           }
 
-                          Text {
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                            text: eventRow.meeting.title
-                            textFormat: Text.PlainText
-                            color: eventRow.tentative
-                              ? Qt.darker(root.contentForeground, 1.35)
-                              : root.contentForeground
-                            font.family: root.contentFontFamily
-                            font.pixelSize: Style.font.body
-                            font.italic: eventRow.tentative
-                            font.strikeout: eventRow.declined
-                            elide: Text.ElideRight
-                            maximumLineCount: 1
+                          MouseArea {
+                            id: rowMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onEntered: navigation.focusEvent(eventRow.navigationIndex)
+                            onClicked: root.openEvent(eventRow.meeting)
                           }
 
-                          Text {
-                            visible: !!eventRow.meeting.conferenceUrl
-                            Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredWidth: Style.space(16)
-                            Layout.rightMargin: Style.space(2)
-                            horizontalAlignment: Text.AlignRight
-                            text: ""
-                            color: Color.accent
-                            font.family: root.contentFontFamily
-                            font.pixelSize: Style.font.bodySmall
+                          onHasCursorChanged: if (eventRow.hasCursor) root.scrollItemIntoView(eventRow)
+
+                          RowLayout {
+                            id: eventLayout
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.leftMargin: Style.space(20)
+                            anchors.rightMargin: Style.space(10)
+                            spacing: Style.space(8)
+
+                            Text {
+                              Layout.alignment: Qt.AlignVCenter
+                              Layout.preferredWidth: Style.space(root.timeFormat === "12h" ? 54 : 44)
+                              text: eventRow.meeting.all_day
+                                ? "ALL DAY"
+                                : Model.hm(eventRow.meeting.startMs, root.timeFormat)
+                              color: eventRow.happening ? Color.accent : Qt.darker(root.contentForeground, 1.3)
+                              font.family: root.contentFontFamily
+                              font.pixelSize: eventRow.meeting.all_day ? Style.font.caption : Style.font.bodySmall
+                              font.bold: true
+                            }
+
+                            Text {
+                              Layout.fillWidth: true
+                              Layout.alignment: Qt.AlignVCenter
+                              text: eventRow.meeting.title
+                              textFormat: Text.PlainText
+                              color: eventRow.tentative
+                                ? Qt.darker(root.contentForeground, 1.35)
+                                : root.contentForeground
+                              font.family: root.contentFontFamily
+                              font.pixelSize: Style.font.body
+                              font.italic: eventRow.tentative
+                              font.strikeout: eventRow.declined
+                              elide: Text.ElideRight
+                              maximumLineCount: 1
+                            }
+
+                            Text {
+                              visible: !!eventRow.meeting.conferenceUrl
+                              Layout.alignment: Qt.AlignVCenter
+                              Layout.preferredWidth: Style.space(16)
+                              Layout.rightMargin: Style.space(2)
+                              horizontalAlignment: Text.AlignRight
+                              text: ""
+                              color: Color.accent
+                              font.family: root.contentFontFamily
+                              font.pixelSize: Style.font.bodySmall
+                            }
                           }
                         }
                       }
+                    }
+
+                    NowMarker {
+                      visible: groupItem.nowIndex >= 0 && groupItem.nowIndex === groupItem.group.items.length
+                      width: parent.width
                     }
                   }
                 }
@@ -832,6 +856,48 @@ Panel {
           }
         }
       }
+    }
+  }
+
+  // A line at the current time between today's past and upcoming events, with
+  // the time in the same column as event start times.
+  component NowMarker: Item {
+    implicitHeight: Style.space(16)
+    height: visible ? implicitHeight : 0
+
+    Text {
+      id: nowLabel
+      anchors.left: parent.left
+      anchors.leftMargin: Style.space(20)
+      anchors.verticalCenter: parent.verticalCenter
+      width: Style.space(root.timeFormat === "12h" ? 54 : 44)
+      text: Model.hm(root.now.getTime(), root.timeFormat)
+      color: Color.accent
+      font.family: root.contentFontFamily
+      font.pixelSize: Style.font.caption
+      font.bold: true
+    }
+
+    Rectangle {
+      id: nowDot
+      anchors.left: parent.left
+      anchors.leftMargin: Style.space(6)
+      anchors.verticalCenter: parent.verticalCenter
+      width: Style.space(6)
+      height: width
+      radius: width / 2
+      color: Color.accent
+    }
+
+    Rectangle {
+      anchors.left: nowLabel.right
+      anchors.leftMargin: Style.space(8)
+      anchors.right: parent.right
+      anchors.rightMargin: Style.space(10)
+      anchors.verticalCenter: parent.verticalCenter
+      height: Math.max(1, Style.space(1))
+      color: Color.accent
+      opacity: 0.8
     }
   }
 }

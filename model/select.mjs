@@ -142,3 +142,16 @@ export function buildScheduleGroups(events, now, options) {
 
   return Object.keys(byKey).sort().map(function(key) { return byKey[key] })
 }
+
+// Where "now" falls in a day's items: before the first timed event that has
+// not started yet. All-day events and events in progress stay above the line.
+// `items` arrives from a Repeater's modelData as a QML list, not an Array, so
+// only its length and indices are relied on.
+export function nowMarkerIndex(items, now) {
+  const count = items ? Number(items.length) || 0 : 0
+  const current = now.getTime()
+  for (let i = 0; i < count; i++) {
+    if (items[i] && items[i].all_day !== true && items[i].startMs > current) return i
+  }
+  return count
+}

@@ -9,6 +9,7 @@
 - Supports all major calendar providers (Google Calendar, iCloud, Outlook, CalDAV...) through [caldir](https://caldir.org).
 - Uses vim motions (<kbd>h</kbd>, <kbd>j</kbd>, <kbd>k</kbd>,<kbd>l</kbd>) for navigation.
 - Highlights the next meeting when it's close to start.
+- Marks the current time in today's schedule, between past and upcoming events.
 - Shows a badge for pending invitations, with **Maybe**, **Decline**, and **Accept** actions in the panel.
 - One-click action. Meeting events (Google Meet, Zoom, etc) open the video URL in your browser. Non-meeting events open in [renCal](https://rencal.org).
 - Syncs automatically (or trigger manually with <kbd>s</kbd>).
