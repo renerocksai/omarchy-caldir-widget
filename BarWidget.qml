@@ -477,7 +477,8 @@ BarWidget {
     if (loadError !== "") return Model.plainLine(loadError)
     if (invitationCount > 0) return invitationCount + (invitationCount === 1
       ? " invitation needs a response" : " invitations need a response") + "\nClick to RSVP"
-    if (!nextMeeting) return showingAllEvents ? "No upcoming events" : "No upcoming meetings"
+    if (!nextMeeting) return "No " + (showingAllEvents ? "events" : "meetings")
+      + " in the next " + lookaheadMinutes + (lookaheadMinutes === 1 ? " minute" : " minutes")
     var title = Model.plainLine(nextMeeting.title)
     var range = Model.timeRange(nextMeeting.startMs, nextMeeting.endMs, timeFormat)
     var status = Model.relativeStatus(nextMeeting, now, timeFormat)

@@ -86,6 +86,8 @@ detected. Everything else stays in the panel.
 Raise `lookaheadMinutes` if you want more warning before a call, and set
 `highlightEvents` to `"all"` if your calendar carries meetings that have no link
 (a room booking, a recurring focus block, an off-site).
+When no event qualifies for the bar, the tooltip names the configured window,
+for example, "No meetings in the next 30 minutes".
 
 Declined, all-day, and tentative events stay off the bar under both settings.
 When the selected event has no video link, the "Next" card drops its **Join
