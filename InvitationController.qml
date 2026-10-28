@@ -64,6 +64,13 @@ Item {
     pushProcess.running = true
   }
 
+  function reconcilePendingSend() {
+    if (!pendingSend || executable === "" || busy || syncBlocked) return
+    refreshing = true
+    statusProcess.command = Model.boundedCommand([executable, "status", "--calendar", pendingSend.calendar])
+    statusProcess.running = true
+  }
+
   Process {
     id: inviteProcess
     stdout: StdioCollector { id: inviteStdout; waitForEnd: true }
@@ -83,9 +90,22 @@ Item {
       try {
         root.invitations = Model.parseInvitations(inviteStdout.text || "", root.calendarColors)
         root.loadError = ""
+        root.reconcilePendingSend()
       } catch (error) {
         root.loadError = "Could not load invitations. Try caldir update. " + error
       }
+    }
+  }
+
+  Process {
+    id: statusProcess
+    stdout: StdioCollector { id: statusStdout; waitForEnd: true }
+    onExited: function(exitCode) {
+      root.refreshing = false
+      if (!root.pendingSend || !Model.rsvpStatusSettled(exitCode, statusStdout.text || "", root.pendingSend.calendar)) return
+      root.pendingSend = null
+      root.responseError = ""
+      root.responseSaved()
     }
   }
 
