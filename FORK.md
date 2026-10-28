@@ -41,5 +41,8 @@ through Omarchy's normal updater:
 omarchy plugin update org.ren.caldir
 ```
 
+If the running UI retains the previous QML behavior after an update, run
+`omarchy restart shell` to load the updated code in a fresh shell process.
+
 Keep the installed checkout clean; do development in the separate checkout.
 This workflow does not install a scheduled job or automatically publish merges.
