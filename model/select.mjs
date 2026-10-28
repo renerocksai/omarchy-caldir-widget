@@ -4,7 +4,8 @@ import {
   HIGHLIGHT_EVENTS_ALL,
   normalizeHighlightEvents,
   normalizeDaysAhead,
-  normalizeLookaheadMinutes
+  normalizeLookaheadMinutes,
+  normalizeTooltipLookaheadMinutes
 } from "./settings.mjs"
 
 // The selectors below never sort: events arrive in parseAgenda order (start
@@ -97,6 +98,18 @@ export function nextMeeting(events, now, options) {
     }
   }
   return result
+}
+
+// A longer hover preview must not bring the bar countdown forward.
+export function meetingSelections(events, now, options) {
+  const settings = options || {}
+  return {
+    bar: nextMeeting(events, now, settings),
+    tooltip: nextMeeting(events, now, {
+      lookaheadMinutes: normalizeTooltipLookaheadMinutes(settings.tooltipLookaheadMinutes),
+      highlightEvents: settings.highlightEvents
+    })
+  }
 }
 
 // A list rather than a set of flags, so the panel's selected action is an index

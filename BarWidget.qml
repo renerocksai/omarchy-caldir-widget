@@ -15,11 +15,13 @@ BarWidget {
   // null lets the model supply the default, so it is declared in one place.
   readonly property int daysAhead: Model.normalizeDaysAhead(setting("daysAhead", null))
   readonly property int lookaheadMinutes: Model.normalizeLookaheadMinutes(setting("lookaheadMinutes", null))
+  readonly property int tooltipLookaheadMinutes: Model.normalizeTooltipLookaheadMinutes(setting("tooltipLookaheadMinutes", null))
   readonly property string highlightEvents: Model.normalizeHighlightEvents(setting("highlightEvents", null))
   readonly property bool showingAllEvents: highlightEvents === Model.HIGHLIGHT_EVENTS_ALL
 
   property var scheduleGroups: []
   property var nextMeeting: null
+  property var tooltipMeeting: null
   property var calendarColors: ({})
   property string loadError: ""
   property bool needsCalendarSetup: false
@@ -153,10 +155,13 @@ BarWidget {
 
   function setEvents(events) {
     scheduleGroups = Model.buildScheduleGroups(events, now, { daysAhead: daysAhead })
-    nextMeeting = Model.nextMeeting(events, now, {
+    var selections = Model.meetingSelections(events, now, {
       lookaheadMinutes: lookaheadMinutes,
+      tooltipLookaheadMinutes: tooltipLookaheadMinutes,
       highlightEvents: highlightEvents
     })
+    nextMeeting = selections.bar
+    tooltipMeeting = selections.tooltip
   }
 
   function pull() {
@@ -477,11 +482,16 @@ BarWidget {
     if (loadError !== "") return Model.plainLine(loadError)
     if (invitationCount > 0) return invitationCount + (invitationCount === 1
       ? " invitation needs a response" : " invitations need a response") + "\nClick to RSVP"
-    if (!nextMeeting) return "No " + (showingAllEvents ? "events" : "meetings")
-      + " in the next " + lookaheadMinutes + (lookaheadMinutes === 1 ? " minute" : " minutes")
-    var title = Model.plainLine(nextMeeting.title)
-    var range = Model.timeRange(nextMeeting.startMs, nextMeeting.endMs, timeFormat)
-    var status = Model.relativeStatus(nextMeeting, now, timeFormat)
+    if (!tooltipMeeting) {
+      var hours = tooltipLookaheadMinutes / 60
+      var window = tooltipLookaheadMinutes % 60 === 0
+        ? hours + (hours === 1 ? " hour" : " hours")
+        : tooltipLookaheadMinutes + (tooltipLookaheadMinutes === 1 ? " minute" : " minutes")
+      return "No " + (showingAllEvents ? "events" : "meetings") + " in the next " + window
+    }
+    var title = Model.plainLine(tooltipMeeting.title)
+    var range = Model.meetingTimeLabel(tooltipMeeting.startMs, tooltipMeeting.endMs, now, timeFormat)
+    var status = Model.relativeStatus(tooltipMeeting, now, timeFormat)
     var line = title + " · " + range + (status ? " (" + status + ")" : "")
     return line
   }
