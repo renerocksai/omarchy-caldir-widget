@@ -10,7 +10,7 @@ cd "$repo_dir"
 # symlinks inside the plugin folder.
 import_dir="${XDG_CACHE_HOME:-$HOME/.cache}/omarchy-caldir/qmllint"
 mkdir -p "$import_dir"
-ln -sfn "$HOME/.local/share/omarchy/shell" "$import_dir/qs"
+ln -sfn "${OMARCHY_PATH:-$HOME/.local/share/omarchy}/shell" "$import_dir/qs"
 
 # unqualified: outer-id access from delegates, legal under the default
 #   ComponentBehavior (adopt `pragma ComponentBehavior: Bound` to re-enable).
