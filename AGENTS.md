@@ -18,6 +18,10 @@ options — and normalized there on the way in, because `shell.json` is
 hand-editable and the manifest's schema is only a hint. `BarWidget.qml`
 normalizes at the boundary so the rest of the code sees valid values, and a
 test checks the declarations against `manifest.json` so the two cannot drift.
+`lookaheadMinutes` selects the bar countdown (default 30 minutes), while
+`tooltipLookaheadMinutes` selects the hover preview (default 480 minutes).
+`Model.meetingSelections` computes both independently with the same eligibility
+rules; changing the tooltip window must not promote events onto the bar.
 
 `NavigationController.qml` holds the panel's keyboard selection. The hero
 card's actions come from `Model.heroActions(event)` as an ordered list, and

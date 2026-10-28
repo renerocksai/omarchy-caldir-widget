@@ -33,6 +33,7 @@ export {
 
 export {
   nextMeeting,
+  meetingSelections,
   buildScheduleGroups,
   heroActions,
   nowMarkerIndex
@@ -44,9 +45,11 @@ export {
   HIGHLIGHT_EVENTS,
   DAYS_AHEAD,
   LOOKAHEAD_MINUTES,
+  TOOLTIP_LOOKAHEAD_MINUTES,
   normalizeHighlightEvents,
   normalizeDaysAhead,
-  normalizeLookaheadMinutes
+  normalizeLookaheadMinutes,
+  normalizeTooltipLookaheadMinutes
 } from "./model/settings.mjs"
 
 export {
