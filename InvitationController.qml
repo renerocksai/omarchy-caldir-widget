@@ -90,7 +90,6 @@ Item {
       try {
         root.invitations = Model.parseInvitations(inviteStdout.text || "", root.calendarColors)
         root.loadError = ""
-        root.reconcilePendingSend()
       } catch (error) {
         root.loadError = "Could not load invitations. Try caldir update. " + error
       }

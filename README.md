@@ -102,11 +102,6 @@ Choose **Maybe**, **Decline**, or **Accept** to save and send your response
 immediately. The widget runs `caldir rsvp`, then `caldir push --calendar` for
 that invitation's calendar. Caldir pushes all pending changes in that calendar.
 If sending cannot be confirmed, **Retry sending** (or <kbd>s</kbd>) retries it.
-An already-sent response with no changes left to push counts as success.
-Refreshes also check a pending send using read-only calendar status, so a
-response completed by another client clears the retry and resumes automatic
-pulls without sending the response again. Provider failures and remaining
-local changes keep the retry available.
 
 Recurring occurrences that share a source file count as one invitation; the
 response applies to that source event, usually the whole series. Occurrence

@@ -37,8 +37,9 @@ Responses run `caldir rsvp -- <path> <response>`, then push that calendar. The
 controller keeps explicit busy state because `Process.running` updates can be
 deferred. A successful exit alone does not confirm a push: caldir can print
 provider errors on stdout and exit zero. Unconfirmed sends retain a retry
-action. Refreshes check a pending send with read-only `caldir status --calendar`;
-only a successful status with no outgoing changes clears an external send.
+action. A pending send blocks `caldir pull`, so the pull timer checks it with
+read-only `caldir status --calendar` instead; only a successful status with no
+outgoing changes clears an external send.
 `No changes to push` is also a successful no-op, including ANSI-colored output.
 Provider failures with exit zero must still retain the retry. The bar and panel
 use `visibleInvitations`: a card disappears immediately while saving or sending

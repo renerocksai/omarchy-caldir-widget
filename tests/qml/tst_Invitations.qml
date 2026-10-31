@@ -125,9 +125,11 @@ TestCase {
   }
 
   function test_external_send_is_reconciled_without_pushing_again() {
+    // A saved response no longer appears in `caldir invites`.
+    responses.invitations = []
     responses.pendingSend = invite("settled")
     responses.responseError = "Previous send could not be confirmed"
-    responses.refresh()
+    responses.reconcilePendingSend()
     tryCompare(responses, "busy", false)
     compare(responses.pendingSend, null)
     compare(responses.responseError, "")
@@ -135,10 +137,20 @@ TestCase {
     compare(savedSpy.count, 1)
   }
 
+  function test_refresh_does_not_check_pending_send_status() {
+    responses.pendingSend = invite("settled")
+    responses.responseError = "Previous send could not be confirmed"
+    responses.refresh()
+    tryCompare(responses, "busy", false)
+    verify(responses.pendingSend)
+    verify(responses.canRetry)
+    compare(savedSpy.count, 0)
+  }
+
   function test_unsent_response_survives_status_reconciliation() {
     responses.pendingSend = invite("work")
     responses.responseError = "Previous send could not be confirmed"
-    responses.refresh()
+    responses.reconcilePendingSend()
     tryCompare(responses, "busy", false)
     verify(responses.pendingSend)
     verify(responses.canRetry)
@@ -148,7 +160,7 @@ TestCase {
   function test_external_send_does_not_block_new_incoming_meetings() {
     responses.pendingSend = invite("incoming")
     responses.responseError = "Previous send could not be confirmed"
-    responses.refresh()
+    responses.reconcilePendingSend()
     tryCompare(responses, "busy", false)
     compare(responses.pendingSend, null)
     compare(responses.responseError, "")
