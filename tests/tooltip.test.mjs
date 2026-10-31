@@ -59,6 +59,13 @@ test("both selections preserve declined, pending, tentative and all-day filters"
   assert.equal(select([meeting(240, { url: null })], { highlightEvents: "all" }).tooltip.title, "Meeting in 240 minutes")
 })
 
+test("distant meetings count down rather than repeating their start time", () => {
+  const status = minutes => Model.relativeStatus(select([meeting(minutes)]).tooltip, now)
+  assert.equal(status(18), "starts in 18 min")
+  assert.equal(status(60), "starts in 1h")
+  assert.equal(status(172), "starts in 2h 52m")
+})
+
 test("tooltip settings normalize hand-edited values and match the manifest", () => {
   const spec = Model.TOOLTIP_LOOKAHEAD_MINUTES
   for (const value of [undefined, null, "", " ", "invalid", Infinity])

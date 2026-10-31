@@ -491,7 +491,7 @@ BarWidget {
     }
     var title = Model.plainLine(tooltipMeeting.title)
     var range = Model.meetingTimeLabel(tooltipMeeting.startMs, tooltipMeeting.endMs, now, timeFormat)
-    var status = Model.relativeStatus(tooltipMeeting, now, timeFormat)
+    var status = Model.relativeStatus(tooltipMeeting, now)
     var line = title + " · " + range + (status ? " (" + status + ")" : "")
     return line
   }
