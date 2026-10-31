@@ -15,7 +15,6 @@ BarWidget {
   // null lets the model supply the default, so it is declared in one place.
   readonly property int daysAhead: Model.normalizeDaysAhead(setting("daysAhead", null))
   readonly property int lookaheadMinutes: Model.normalizeLookaheadMinutes(setting("lookaheadMinutes", null))
-  readonly property int tooltipLookaheadMinutes: Model.normalizeTooltipLookaheadMinutes(setting("tooltipLookaheadMinutes", null))
   readonly property string highlightEvents: Model.normalizeHighlightEvents(setting("highlightEvents", null))
   readonly property bool showingAllEvents: highlightEvents === Model.HIGHLIGHT_EVENTS_ALL
 
@@ -157,7 +156,6 @@ BarWidget {
     scheduleGroups = Model.buildScheduleGroups(events, now, { daysAhead: daysAhead })
     var selections = Model.meetingSelections(events, now, {
       lookaheadMinutes: lookaheadMinutes,
-      tooltipLookaheadMinutes: tooltipLookaheadMinutes,
       highlightEvents: highlightEvents
     })
     nextMeeting = selections.bar
@@ -482,13 +480,7 @@ BarWidget {
     if (loadError !== "") return Model.plainLine(loadError)
     if (invitationCount > 0) return invitationCount + (invitationCount === 1
       ? " invitation needs a response" : " invitations need a response") + "\nClick to RSVP"
-    if (!tooltipMeeting) {
-      var hours = tooltipLookaheadMinutes / 60
-      var window = tooltipLookaheadMinutes % 60 === 0
-        ? hours + (hours === 1 ? " hour" : " hours")
-        : tooltipLookaheadMinutes + (tooltipLookaheadMinutes === 1 ? " minute" : " minutes")
-      return "No " + (showingAllEvents ? "events" : "meetings") + " in the next " + window
-    }
+    if (!tooltipMeeting) return showingAllEvents ? "No upcoming events" : "No upcoming meetings"
     var title = Model.plainLine(tooltipMeeting.title)
     var range = Model.meetingTimeLabel(tooltipMeeting.startMs, tooltipMeeting.endMs, now, timeFormat)
     var status = Model.relativeStatus(tooltipMeeting, now)

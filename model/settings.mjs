@@ -18,13 +18,6 @@ export const LOOKAHEAD_MINUTES = {
   max: 1440
 }
 
-export const TOOLTIP_LOOKAHEAD_MINUTES = {
-  key: "tooltipLookaheadMinutes",
-  defaultValue: 480,
-  min: 1,
-  max: 1440
-}
-
 export const HIGHLIGHT_EVENTS = {
   key: "highlightEvents",
   defaultValue: HIGHLIGHT_EVENTS_MEETINGS,
@@ -61,10 +54,6 @@ export function normalizeDaysAhead(value) {
 
 export function normalizeLookaheadMinutes(value) {
   return normalizeInteger(value, LOOKAHEAD_MINUTES)
-}
-
-export function normalizeTooltipLookaheadMinutes(value) {
-  return normalizeInteger(value, TOOLTIP_LOOKAHEAD_MINUTES)
 }
 
 export function normalizeHighlightEvents(value) {

@@ -44,11 +44,9 @@ export {
   HIGHLIGHT_EVENTS,
   DAYS_AHEAD,
   LOOKAHEAD_MINUTES,
-  TOOLTIP_LOOKAHEAD_MINUTES,
   normalizeHighlightEvents,
   normalizeDaysAhead,
-  normalizeLookaheadMinutes,
-  normalizeTooltipLookaheadMinutes
+  normalizeLookaheadMinutes
 } from "./model/settings.mjs"
 
 export {

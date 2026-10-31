@@ -21,7 +21,6 @@
     "defaults": {
       "daysAhead": 2,
       "lookaheadMinutes": 30,
-      "tooltipLookaheadMinutes": 480,
       "highlightEvents": "meetings"
     },
     "schema": [
@@ -42,16 +41,6 @@
         "step": 5,
         "defaultValue": 30,
         "description": "How long before it starts an event appears in the bar."
-      },
-      {
-        "key": "tooltipLookaheadMinutes",
-        "type": "integer",
-        "label": "Tooltip lookahead (minutes)",
-        "min": 1,
-        "max": 1440,
-        "step": 5,
-        "defaultValue": 480,
-        "description": "How far ahead the hover tooltip previews meetings, independently of the bar countdown."
       },
       {
         "key": "highlightEvents",

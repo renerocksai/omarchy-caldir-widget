@@ -67,7 +67,6 @@ Set your preferences in `~/.config/omarchy/shell.json`:
   "id": "org.ren.caldir",
   "daysAhead": 3,
   "lookaheadMinutes": 60,
-  "tooltipLookaheadMinutes": 480,
   "highlightEvents": "all"
 }
 ```
@@ -76,7 +75,6 @@ Set your preferences in `~/.config/omarchy/shell.json`:
 | --- | ---: | --- |
 | `daysAhead` | `2` | Number of future schedule days to display |
 | `lookaheadMinutes` | `30` | How long before it starts an event appears in the bar (1-1440) |
-| `tooltipLookaheadMinutes` | `480` | How far ahead the hover tooltip previews meetings, independently of the bar (1-1440) |
 | `highlightEvents` | `"meetings"` | `"meetings"` shows only events with a detected video link. `"all"` also shows events without one |
 
 ### Choosing what reaches the bar
@@ -88,10 +86,8 @@ detected. Everything else stays in the panel.
 Raise `lookaheadMinutes` if you want more warning before a call, and set
 `highlightEvents` to `"all"` if your calendar carries meetings that have no link
 (a room booking, a recurring focus block, an off-site).
-The hover tooltip uses `tooltipLookaheadMinutes` independently: by default it
-previews meetings up to eight hours away while the bar countdown starts only
-30 minutes before the meeting. When its own window is empty, the tooltip names
-that window, for example, "No meetings in the next 8 hours".
+Hovering the bar shows the next qualifying event anywhere in the schedule, so
+you can see what is coming before it is close enough to reach the bar.
 
 Declined, all-day, and tentative events stay off the bar under both settings.
 When the selected event has no video link, the "Next" card drops its **Join
